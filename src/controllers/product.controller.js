@@ -1,5 +1,5 @@
 import Product from "../models/product.model.js";
-import User from "../models/user.model.js";
+import {User} from "../models/user.model.js";
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from "../middlewares/custom_logger.js";
 import { winstonLogger } from "../winston.logger.js";

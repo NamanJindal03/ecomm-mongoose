@@ -4,6 +4,7 @@ import UserControllerClass from '../controllers/user.controller.js';
 import ProductControllerClass from '../controllers/product.controller.js';
 import { placeOrder } from '../controllers/order.controller.js';
 import { auth, customerCheck } from '../middlewares/auth.js';
+import { User } from '../models/user.model.js';
 
 const router =  express.Router()
 
@@ -28,6 +29,9 @@ router.route('/user/signin')
 
 router.route('/user')
     .get((...arg)=>UserController.allUsers(...arg))
+
+router.route('/user/:userId')
+    .put((...arg) => UserController.updateUser(...arg))
 
 router.route('/order/:productId')
     .post(customerCheck, placeOrder)

@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import User from "../models/user.model.js"
+import {User} from "../models/user.model.js"
 import UserRepository from "../repositories/user.repository.js"
 import { v4 as uuidv4 } from 'uuid';
 const SECRET_CODE = 'iambatman' //supposed to go in env -> currently present here
@@ -14,18 +14,25 @@ export default class UserController{
         this.userRepository = new UserRepository();
     }
     async signup(req, res){
-        const {name, email, password, role} = req.body;
-        if(!name || !email || !password){
-            return res.status(400).json({status: false, message: 'could not register user', error: 'required fiedls not presetn'})
+        try{
+            const {name, email, password, role, address} = req.body;
+            if(!name || !email || !password){
+                return res.status(400).json({status: false, message: 'could not register user', error: 'required fiedls not presetn'})
+            }
+            // if(!roleEnums.includes(role)){
+            //     return res.status(400).json({status: false, message: 'could not register user', error: 'role is not correct'})
+            // }
+            const hash = bcrypt.hashSync(password, saltRounds);
+            // const userId = uuidv4();
+            const newUser = new User({email, password: hash, name, role, address});
+            // console.log(newUser);
+            await this.userRepository.createUser(newUser);
+            return res.status(201).json({status: true, message: 'user signed up succesfully'})
         }
-        if(!roleEnums.includes(role)){
-            return res.status(400).json({status: false, message: 'could not register user', error: 'role is not correct'})
+        catch(err){
+            return res.status(400).json({status: false, error:err, message: 'Trouble signing up'});
         }
-        const hash = bcrypt.hashSync(password, saltRounds);
-        // const userId = uuidv4();
-        const newUser = new User(email, hash, name, role);
-        await this.userRepository.createUser(newUser);
-        return res.status(201).json({status: true, message: 'user signed up succesfully'})
+        
     }
     
     async  signin(req, res){
@@ -43,9 +50,13 @@ export default class UserController{
         if(!isValidated){
             return res.status(400).json({status: false, message: 'either password or email is incorrect', error: 'either password or email is incorrect'})
         }
-        console.log(user.id);
+        console.log(user._id);
+
+        user.name = 'naman11111';
+        await user.save();
+
         //do jwt token signing
-        const token = await jwt.sign({id: user.id, email: user.email, role: user.role}, SECRET_CODE);
+        const token = await jwt.sign({id: user._id, email: user.email, role: user.role}, SECRET_CODE);
         
         //adding the token to the http only cookie
         const cookieOptions = {
@@ -63,6 +74,16 @@ export default class UserController{
         return res.status(200).json({data: users});
     }
     
+    async updateUser(req, res){
+        const id = req.params.userId
+        const {body} = req;
+        body.password = bcrypt.hashSync(body.password, saltRounds);
+        const updatedUser  = await User.findOneAndUpdate({_id: id}, body, {new: true});
+        console.log(updatedUser)
+        return res.status(200).json({data: updatedUser});
+        
+
+    }
 }
 
 // export {signup, signin, allUsers}
