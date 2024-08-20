@@ -1,14 +1,24 @@
 import mongoose from 'mongoose'
 const productSchema = new mongoose.Schema({
     name: String,
-    price: Number,
+    price: {
+        type: Number,
+        min: 10,
+    },
     rating: Number,
     decription: String,
-    quanity: Number,
-    createdId: mongoose.Types.ObjectId,
+    quantity: {
+        type: Number,
+        validate: {
+            validator: value => value>=0,
+            message: 'quantity cannot be less than 0'
+        },
+        default: 0,
+        required: true
+    },
     userRatingCount: Number,
     userRatingMapping: [Object],
-})
+}, {timestamps: true})
 
 export default mongoose.model("Product", productSchema);
 

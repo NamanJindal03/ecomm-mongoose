@@ -42,9 +42,9 @@ export default class ProductRepository{
             })
             console.log(filters.price);
             filter.price = {$in: filters.price}
-            filter.quantity = {$gt: 10}
+            // filter.quantity = {$gt: 10}
         }
-        return await Product.find(filter).toArray()
+        return await Product.find(filter)
         // const filterteredProducts = products.filter((entry)=>{
         //     return (
         //         (

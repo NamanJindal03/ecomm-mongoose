@@ -46,7 +46,7 @@ export default class ProductController{
         }
         // const id = uuidv4();
         try{
-            const newProduct = new Product({name, price, rating: 0, description, quantity, createdId:123145, userRatingCount: 0});
+            const newProduct = new Product({name, price, rating: 0, description, quantity, userRatingCount: 0});
             await this.productRepository.addProduct(newProduct);
         }
         catch(error){
