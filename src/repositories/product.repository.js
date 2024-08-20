@@ -5,7 +5,8 @@ import Product from '../models/product.model.js'
 export default class ProductRepository{
     async addProduct(product){
         // const productCollection= Db().collection("product")
-        await Product.insertOne(product)
+        // await Product.insertOne(product)
+        await product.save()
         // products.push(newProduct);
     }
     async getAllProducts(filters){
