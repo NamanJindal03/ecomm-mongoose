@@ -15,6 +15,16 @@ app.use(customLogger);
 
 app.use('/', baseRoutes)
 
+//global error handler -> use it 
+app.use((error, req, res, next) => {
+    console.log(error);
+    res.status(error.statusCode).json({
+        status: error.status || false, 
+        message: error.message || 'something is terribly wrong',
+        error: error.error
+    })
+})
+
 app.listen(PORT, async ()=>{
     await connectionToMongo()
         .then(()=> console.log('mongoose connected succesfully'))

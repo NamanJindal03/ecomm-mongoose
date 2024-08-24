@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema({
     decription: String,
     quantity: {
         type: Number,
-        validate: {
+        validate: { //custom validations
             validator: value => value>=0,
             message: 'quantity cannot be less than 0'
         },
@@ -17,7 +17,14 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     userRatingCount: Number,
-    userRatingMapping: [Object],
+    userRatingMapping: {
+        type: [Object]
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }
+        
 }, {timestamps: true})
 
 export default mongoose.model("Product", productSchema);

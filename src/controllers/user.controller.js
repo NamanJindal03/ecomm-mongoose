@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import {User} from "../models/user.model.js"
 import UserRepository from "../repositories/user.repository.js"
 import { v4 as uuidv4 } from 'uuid';
+import mongoose from "mongoose";
 const SECRET_CODE = 'iambatman' //supposed to go in env -> currently present here
 
 const saltRounds = 10;
@@ -13,10 +14,10 @@ export default class UserController{
     constructor(){
         this.userRepository = new UserRepository();
     }
-    async signup(req, res){
+    async signup(req, res, next){
         try{
-            const {name, email, password, role, address} = req.body;
-            if(!name || !email || !password){
+            const {firstName, lastName, email, password, role, address} = req.body;
+            if(!firstName || !lastName || !email || !password){
                 return res.status(400).json({status: false, message: 'could not register user', error: 'required fiedls not presetn'})
             }
             // if(!roleEnums.includes(role)){
@@ -24,13 +25,22 @@ export default class UserController{
             // }
             const hash = bcrypt.hashSync(password, saltRounds);
             // const userId = uuidv4();
-            const newUser = new User({email, password: hash, name, role, address});
+            const newUser = new User({email, password: hash, firstName, lastName, role, address});
             // console.log(newUser);
             await this.userRepository.createUser(newUser);
             return res.status(201).json({status: true, message: 'user signed up succesfully'})
         }
         catch(err){
-            return res.status(400).json({status: false, error:err, message: 'Trouble signing up'});
+            // next(err);
+        //     // ck
+            if(err instanceof mongoose.Error){
+                // return res.status(400).json({status: false, error:err.name, message: err.message});
+                next({status: false, error: err.name, message: err.message, statusCode: 400});
+                return;
+            }
+            next({status: false, error: err, message: 'Trouble signing up', statusCode: 400})
+
+            // return res.status(400).json({status: false, error:err, message: 'Trouble signing up'});
         }
         
     }
@@ -42,6 +52,7 @@ export default class UserController{
         }
         const user = await this.userRepository.getUserByEmail(email);
         console.log(user)
+        // console.log(user.fullName)
         if(!user){
             return res.status(400).json({status: false, message: 'either password or email is incorrect', error: 'either password or email is incorrect'})
         }

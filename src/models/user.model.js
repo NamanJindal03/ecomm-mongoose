@@ -27,12 +27,18 @@ const userSchema = new mongoose.Schema({
     // email: String,
     // password: String,
     // role: String
-    name: {
-        type: String
+    firstName: {
+        type: String,
+        required: true
     },
+    lastName: {
+        type: String,
+        required: true
+    }, 
     email: {
         type: String,
         immutable: true,
+        match: /[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}/
     },
     password: {
         type: String,
@@ -56,8 +62,33 @@ const userSchema = new mongoose.Schema({
     // }
 })
 
-export const User =  mongoose.model('User', userSchema);
 
+/* 
+    model methods
+    virtuals
+    hooks
+*/
+
+//very important -> always use normal function with all the above functionalities
+userSchema.virtual('fullName').get(function(){
+    return `${this.firstName} ${this.lastName}`
+})
+
+userSchema.pre('save', function(next){
+    this.lastName = 'random random';
+    //logging -> 
+    // this.fullName = 
+    next();
+})
+
+userSchema.post('save', function(data, next){
+    console.log('post hook called')
+    console.log(data);
+    next();
+})
+
+
+export const User =  mongoose.model('User', userSchema);
 
 
 
