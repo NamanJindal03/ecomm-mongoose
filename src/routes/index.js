@@ -41,10 +41,11 @@ router.route('/order/:productId')
 
 router.route('/review')
     .post(auth, (...arg) => ReviewController.addReview(...arg) )
-    .get(auth, (...arg) => ReviewController.getReviews(...arg))
 
 router.route('/review/:reviewId')
-    .put(auth, (...arg) => ReviewController.updateReviews(...arg))
+    .put(auth, (...arg) => ReviewController.updateReview(...arg))
+    .get(auth, (...arg) => ReviewController.getReviews(...arg))
+
 
 
 

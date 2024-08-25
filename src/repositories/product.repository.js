@@ -1,6 +1,6 @@
 
 // import { Db } from "../db.js";
-import Product from '../models/product.model.js'
+import productModel from '../models/product.model.js'
 
 export default class ProductRepository{
     async addProduct(product){
@@ -44,7 +44,7 @@ export default class ProductRepository{
             filter.price = {$in: filters.price}
             // filter.quantity = {$gt: 10}
         }
-        return await Product.find(filter)
+        return await productModel.find(filter)
         // const filterteredProducts = products.filter((entry)=>{
         //     return (
         //         (
@@ -54,5 +54,14 @@ export default class ProductRepository{
         //     )
         // })
         // return filterteredProducts;
+    }
+    async getProductFromId(id){
+        return await productModel.findById(id)
+    }
+
+    async addReviewToProduct(productId, reviewId){
+        const product = await this.getProductFromId(productId)
+        product.review.push(reviewId);
+        product.save()
     }
 }
