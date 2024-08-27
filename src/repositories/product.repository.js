@@ -44,7 +44,7 @@ export default class ProductRepository{
             filter.price = {$in: filters.price}
             // filter.quantity = {$gt: 10}
         }
-        return await productModel.find(filter)
+        return await productModel.find(filter).populate('review')
         // const filterteredProducts = products.filter((entry)=>{
         //     return (
         //         (

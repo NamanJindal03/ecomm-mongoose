@@ -33,7 +33,7 @@ export default class ProductController{
     
     }
     
-    async addProduct(req, res){
+    async addProduct(req, res, next){
         
         const {name, price, description, quantity} = req.body;
         if(!name || !price || !description || !quantity){
@@ -52,8 +52,7 @@ export default class ProductController{
         catch(error){
             return res.status(500).json({status: false, error, message: 'something went wrong'})
         }
-        return res.status(200).json({status: true, message: 'Product added succesfully'});
-    
+        res.status(200).json({status: true, message: 'Product added succesfully'});
     }
     
     rateProduct(req, res){

@@ -13,9 +13,29 @@ const router =  express.Router()
 const UserController = new UserControllerClass();
 const ProductController = new ProductControllerClass();
 const ReviewController = new ReviewControllerClass();
+const preHook = (req, res, next) => {
+    const originalJson = res.json.bind(res)
+    res.json = function (body){
+        res.locals.body = body;
+        console.log(res.locals.body)
+    }
+
+    res.locals.originalJson = originalJson
+    console.log('hookk')
+    next()
+}
+const postHook = (req, res, next) => {
+    console.log('entering')
+    let body = res.locals.body
+    body.me = 'm'
+    return res.locals.originalJson(body)
+}
+const addProductHandler = (req, res, next) => {
+    ProductController.addProduct(req, res, next)
+}
 
 router.route('/product')
-    .post((...arg)=> ProductController.addProduct(...arg))
+    .post(preHook,addProductHandler, postHook)
     .get(auth, (...arg)=> ProductController.getAllProducts(...arg))
 
 router.route('/product/:productId')
