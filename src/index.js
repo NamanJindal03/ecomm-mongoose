@@ -13,6 +13,9 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended:true }));
 app.use(customLogger);
 
+app.get('/working', (req, res)=>{
+    return res.end('the website is sort of working ')
+})
 app.use('/', baseRoutes)
 
 //global error handler -> use it 
